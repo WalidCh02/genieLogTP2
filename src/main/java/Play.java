@@ -1,9 +1,14 @@
 public class Play {
 
   public String name;
-  public String type;
+  public Type type;
 
-  public Play(String name, String type) {
+  public static enum Type{
+    trajedy,
+    comedy
+  }
+
+  public Play(String name, Type type) {
     this.name = name;
     this.type = type;
   }
