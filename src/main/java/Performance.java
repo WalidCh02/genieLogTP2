@@ -8,11 +8,11 @@ public class Performance {
     this.audience = audience;
   }
 
-  public String grtPlayID() {
-    return this.playID;
-  }
+  // public String grtPlayID() {
+  //   return this.playID;
+  // }
 
-  public int getAudience() {
-    return this.audience;
-  }
+  // public int getAudience() {
+  //   return this.audience;
+  // }
 }

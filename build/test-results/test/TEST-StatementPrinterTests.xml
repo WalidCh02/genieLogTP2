@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<<<<<<< HEAD
-<testsuite name="StatementPrinterTests" tests="2" skipped="0" failures="0" errors="0" timestamp="2023-10-30T13:21:04" hostname="DANA-S-LAPTOP" time="0.336">
+<testsuite name="StatementPrinterTests" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-10-31T02:04:30" hostname="DANA-S-LAPTOP" time="0.208">
   <properties/>
-  <testcase name="exampleStatement()" classname="StatementPrinterTests" time="0.314"/>
-  <testcase name="statementWithNewPlayTypes()" classname="StatementPrinterTests" time="0.02"/>
-=======
-<testsuite name="StatementPrinterTests" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-10-27T12:31:19" hostname="DESKTOP-0P54HV2" time="0.173">
-  <properties/>
-  <testcase name="exampleStatement()" classname="StatementPrinterTests" time="0.173"/>
->>>>>>> f4acdf24c761f132b6945a2bebe26ce5fb93edaa
+  <testcase name="exampleStatement()" classname="StatementPrinterTests" time="0.208"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

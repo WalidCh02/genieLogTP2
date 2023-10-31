@@ -5,7 +5,7 @@ public class Play {
 
   public static enum Type {
     trajedy,
-    comedy
+    comedy,
   }
 
   public Play(String name, Type type) {

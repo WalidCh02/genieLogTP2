@@ -5,7 +5,7 @@ public class StatementPrinter {
 
   public String print(Invoice invoice, HashMap<String, Play> plays) {
 
-    int totalAmount = 0;
+    double totalAmount = 0;
     int volumeCredits = 0;
 
     // Create a StringBuffer to store the statement text.
@@ -20,17 +20,14 @@ public class StatementPrinter {
     for (Performance perf : invoice.performances) {
       // Get the play details for the current performance.
       Play play = plays.get(perf.playID);
-      double thisAmount = 0.0;
+      double thisAmount = 0;
 
       // Utiliser une méthode pour vérifier le type de pièce
       thisAmount = calculateAmount(play, perf);
 
       // Calculate and add volume credits.
-      volumeCredits += Math.max(perf.audience - 30, 0);
-      // Add extra credit for every ten comedy attendees.
-      if (Play.Type.comedy.equals(play.type))
-        volumeCredits += Math.floor(perf.audience / 5);
-
+      volumeCredits += updateCredit(perf,play);
+      
       // Add a line to the statement for this performance.
       sbResult.append(
           String.format("  %s: %s (%s seats)\n", play.name, currencyFormatter.format(thisAmount), perf.audience));
@@ -48,27 +45,74 @@ public class StatementPrinter {
   }
 
   // Method to calculate the amount based on the type of play
-  private double calculateAmount(Play play, Performance perf) {
+private double calculateAmount(Play play, Performance perf) {
     double thisAmount = 0.0;
     // Play.Type type = Play.Type.trajedy;
     switch (play.type) {
-      case trajedy:
+    case trajedy:
         thisAmount = 400.00;
         if (perf.audience > 30) {
-          thisAmount += 10.00 * (perf.audience - 30);
+        thisAmount += 10.00 * (perf.audience - 30);
         }
         break;
-      case comedy:
+    case comedy:
         thisAmount = 300.00;
         if (perf.audience > 20) {
-          thisAmount += 100.00 + 5.00 * (perf.audience - 20);
+        thisAmount += 100.00 + 5.00 * (perf.audience - 20);
         }
         thisAmount += 3.00 * perf.audience;
         break;
-      default:
+    default:
         throw new Error("unknown type: " + play.type); // Handle unknown play types.
     }
     return thisAmount;
-  }
+}
 
+public float updateCredit(Performance perf,Play play){
+ int dif = Math.max(perf.audience - 30, 0);
+ switch (play.type){
+    case comedy:
+        // Add extra credit for every ten comedy attendees.
+        dif += Math.floor(perf.audience/5);
+        break;
+    default:
+        //do nothing
+ }
+ return dif;
+}
+public String printToHTML(Invoice invoice, HashMap<String,Play> plays)
+    {
+        double totalAmount = 0;
+        int volumeCredits = 0;
+        StringBuffer sb = new StringBuffer();
+        NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.US);
+
+        sb.append("<html>");
+        sb.append("<head>");
+        sb.append("<title>Invoice</title>");
+        sb.append("<style>");
+        sb.append("table, th, td { border: 2px solid black; }");
+        sb.append("</style>");
+        sb.append("</head>");
+        sb.append("<body>");
+        sb.append(String.format("<h1>Statement for %s</h1>\n", invoice.customer));
+        sb.append("<table>\n");
+        sb.append("<tr><th>Piece</th><th>Seats Sold</th><th>Price</th></tr>");
+        for (Performance perf : invoice.performances){
+            Play play = plays.get(perf.playID);
+            double thisAmount = 0;
+            thisAmount = calculateAmount(play, perf);
+            volumeCredits += updateCredit(perf, play);
+            sb.append(String.format("  <tr><td>%s</td><td>%s</td><td>%s</td></tr>\n", play.name, perf.audience, currencyFormatter.format(thisAmount)));
+            totalAmount += thisAmount;
+        }
+    sb.append("</table>\n");
+    sb.append(String.format("<p>Amount owed is <em>%s</em></p>\n", currencyFormatter.format(totalAmount )));
+    sb.append(String.format("<p>You earned <em>%s</em> credits</p>\n", volumeCredits));
+    sb.append("</body>");
+    sb.append("</html>");
+    return sb.toString();
+    }
+
+    
 }
