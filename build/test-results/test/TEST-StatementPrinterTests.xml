@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="StatementPrinterTests" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-10-31T02:04:30" hostname="DANA-S-LAPTOP" time="0.208">
+<testsuite name="StatementPrinterTests" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-10-31T11:12:17" hostname="DANA-S-LAPTOP" time="0.347">
   <properties/>
-  <testcase name="exampleStatement()" classname="StatementPrinterTests" time="0.208"/>
+  <testcase name="exampleStatement()" classname="StatementPrinterTests" time="0.347"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

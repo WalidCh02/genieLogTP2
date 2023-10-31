@@ -1,5 +1,10 @@
 import java.text.NumberFormat;
 import java.util.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Locale;
+
 
 public class StatementPrinter {
 
@@ -114,5 +119,15 @@ public String printToHTML(Invoice invoice, HashMap<String,Play> plays)
     return sb.toString();
     }
 
-    
+    public void saveHTMLToFile(String htmlContent, String output) {
+        try {
+            // Create a FileWriter and write the HTML content to the specified file.
+            FileWriter fileWriter = new FileWriter(output);
+            fileWriter.write(htmlContent);
+            fileWriter.close();
+            System.out.println("HTML content has been saved to " + output);
+        } catch (IOException e) {
+            System.err.println("Error saving HTML content to file: " + e.getMessage());
+        }
+    }
 }
