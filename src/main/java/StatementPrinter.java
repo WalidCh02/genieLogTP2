@@ -1,10 +1,13 @@
 import java.text.NumberFormat;
 import java.util.*;
-//import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Locale;
 
 public class StatementPrinter {
+
+    // a boolean used to check if the customer is eligible for a sale
+    Boolean sale = false;
 
     public String print(Invoice invoice, HashMap<String, Play> plays) {
 
@@ -19,23 +22,17 @@ public class StatementPrinter {
         // Create a NumberFormat instance for currency formatting.
         NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.US);
 
-        
         // Iterate through each performance in the invoice.
         for (Performance perf : invoice.performances) {
             // Get the play details for the current performance.
             Play play = plays.get(perf.playID);
             double thisAmount = 0;
-            
+
             // Utiliser une méthode pour vérifier le type de pièce
             thisAmount = calculateAmount(play, perf);
-            // Reduction if customer has a store credit greater than 150
-            if (invoice.customer.StoreCredits >= 150 && thisAmount > 0) {
-                invoice.customer.setStoreCredits(invoice.customer.getStoreCredits() - 150);
-                thisAmount -= 15;
-            }
+
             // Calculate and add volume credits.
             volumeCredits += updateCredit(perf, play);
-            invoice.customer.StoreCredits += volumeCredits;
 
             // Add a line to the statement for this performance.
             sbResult.append(
@@ -49,8 +46,13 @@ public class StatementPrinter {
         sbResult.append(String.format("Amount owed is %s\n", currencyFormatter.format(totalAmount)));
         // Add the total earned credits.
         sbResult.append(String.format("You earned %s credits\n", volumeCredits));
-        sbResult.append(String.format("Store Credits left:%f \n", invoice.customer.getStoreCredits()));
 
+        // Applying the sale if custumor's credit is greater than 150.
+        if (invoice.customer.getStoreCredits() > 150 && totalAmount > 0) {
+            totalAmount -= 15.00;
+            invoice.customer.setStoreCredits(invoice.customer.getStoreCredits() - 150);
+            sale = true;
+        }
         // Return the statement as a string.
         return sbResult.toString();
     }
@@ -92,9 +94,9 @@ public class StatementPrinter {
         return dif;
     }
 
-    public String printToHTML(Invoice invoice, Customer customer, HashMap<String, Play> plays) {
+    public String printToHTML(Invoice invoice, HashMap<String, Play> plays) {
+
         double totalAmount = 0;
-        int volumeCredits = 0;
         StringBuffer sb = new StringBuffer();
         NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.US);
 
@@ -106,21 +108,33 @@ public class StatementPrinter {
         sb.append("</style>");
         sb.append("</head>");
         sb.append("<body>");
-        sb.append(String.format("<h1>Statement for %s</h1>\n", invoice.customer));
+        sb.append(String.format("<h1>Invoice for %s</h1>\n", invoice.customer.Name));
         sb.append("<table>\n");
         sb.append("<tr><th>Piece</th><th>Seats Sold</th><th>Price</th></tr>");
         for (Performance perf : invoice.performances) {
             Play play = plays.get(perf.playID);
             double thisAmount = 0;
             thisAmount = calculateAmount(play, perf);
-            volumeCredits += updateCredit(perf, play);
             sb.append(String.format("  <tr><td>%s</td><td>%s</td><td>%s</td></tr>\n", play.name, perf.audience,
                     currencyFormatter.format(thisAmount)));
             totalAmount += thisAmount;
         }
+
         sb.append("</table>\n");
-        sb.append(String.format("<p>Amount owed is <em>%s</em></p>\n", currencyFormatter.format(totalAmount)));
-        sb.append(String.format("<p>You earned <em>%s</em> credits</p>\n", volumeCredits));
+        sb.append("<table>\n");
+        sb.append(String.format(
+                "<tr><td align=\"right\" style=\"border: 1px solid black\" colspan=\"2\">Total owed: </th><td style=\"border: 1px solid black\">%s</td></tr>",
+                currencyFormatter.format(totalAmount)));
+        sb.append(String.format(
+                "<tr><td align=\"right\" style=\"border: 1px solid black\" colspan=\"2\">Fidelity Points Earned: </th><td style=\"border: 1px solid black\">%s</td></tr>",
+                invoice.customer.getStoreCredits()));
+        if (sale) {
+            sb.append(String.format(
+                    "<tr><td align=\"right\" style=\"border: 1px solid black\" colspan=\"2\">Total owed after sale: </th><td style=\"border: 1px solid black\">%s</td></tr>",
+                    currencyFormatter.format(totalAmount - 15.00)));
+        }
+        sb.append("</table>\n");
+        sb.append("<p>Payement is required under 30 days. We can break your knees if you don't do so.</p>");
         sb.append("</body>");
         sb.append("</html>");
         return sb.toString();
