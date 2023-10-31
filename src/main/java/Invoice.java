@@ -17,4 +17,5 @@ public class Invoice {
   public List<Performance> getPerformance() {
     return this.performances;
   }
+  
 }
